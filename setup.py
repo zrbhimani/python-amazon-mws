@@ -32,7 +32,7 @@ setuptools.setup(
     description=short_description,
     long_description=long_description,
     long_description_content_type='text/markdown',
-    packages=['mws', 'mws.apis'],
+    packages=['mws', 'mws.apis', 'mws.datatypes'],
     install_requires=requires,
     extras_require=extras_require,
     classifiers=[

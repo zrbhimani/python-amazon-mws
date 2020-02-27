@@ -4,8 +4,8 @@ Amazon MWS Products API
 from __future__ import absolute_import
 # import warnings
 
-from ..mws import MWS
-from .. import utils
+from mws import MWS, utils
+from mws.datatypes import FeesEstimateRequest
 
 
 class Products(MWS):
@@ -159,9 +159,24 @@ class Products(MWS):
         }
         return self.make_request(data)
 
-    # # # TODO add this
-    # def get_my_fees_estimate(self):
-    #     pass
+    def get_my_fees_estimate(self, *fees_estimate_requests):
+        """
+        Returns the estimated fees for a list of products.
+
+        Docs:
+        https://docs.developer.amazonservices.com/en_US/products/Products_GetMyFeesEstimate.html
+        """
+        for request in fees_estimate_requests:
+            if not isinstance(request, FeesEstimateRequest):
+                raise ValueError((
+                    "arguments must be instances of `mws.datatypes.products.FeesEstimateRequest"
+                ))
+        data = {'Action': 'GetMyFeesEstimate',}
+        for idx, request in enumerate(fees_estimate_requests):
+            num = idx + 1
+            prefix = "FeesEstimateRequestList.FeesEstimateRequest.{}".format(num)
+            data.update(request.parameterized(prefix=prefix))
+        return self.make_request(data)
 
     def get_my_price_for_sku(self, marketplace_id, skus, condition=None):
         """
