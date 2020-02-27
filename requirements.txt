@@ -1,3 +1,5 @@
+requests
+
 # dev requirements
 # linting
 flake8~=3.7.9
