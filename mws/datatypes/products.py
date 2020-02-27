@@ -137,10 +137,6 @@ class FeesEstimateRequest(BaseDataType):
         identifier=None,
         is_amazon_fulfilled=None,
     ):
-        """
-        Identifier	A unique value that will identify this request.	Yes	Type: xs:string
-        IsAmazonFulfilled
-        """
         # MarketplaceId
         if marketplace in Marketplaces.__members__:
             self.marketplace_id = Marketplaces[marketplace]
