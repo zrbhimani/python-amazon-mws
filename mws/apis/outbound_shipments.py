@@ -5,7 +5,7 @@ from __future__ import absolute_import
 # import warnings
 
 from ..mws import MWS
-# from .. import utils
+from .. import utils
 from ..decorators import next_token_action
 
 
@@ -32,7 +32,8 @@ class OutboundShipments(MWS):
         """
         raise NotImplementedError
 
-    def create_fulfillment_order(self):
+    def create_fulfillment_order(self, action, policy, speed, seller_order_id, order_id, order_date, order_comment,
+                                 items, dest_address, notif_emails):
         """
         Requests that Amazon ship items from the seller's inventory in Amazon's fulfillment network
         to a destination address.
@@ -40,7 +41,21 @@ class OutboundShipments(MWS):
         Docs:
         http://docs.developer.amazonservices.com/en_US/fba_outbound/FBAOutbound_CreateFulfillmentOrder.html
         """
-        raise NotImplementedError
+        data = {
+            'Action': 'CreateFulfillmentOrder',
+            'FulfillmentAction': action,
+            'FulfillmentPolicy': policy,
+            'ShippingSpeedCategory': speed,
+
+            'SellerFulfillmentOrderId': seller_order_id,
+            'DisplayableOrderId': order_id,
+            'DisplayableOrderComment': order_comment,
+            'DisplayableOrderDateTime': order_date,
+        }
+        data.update(utils.enumerate_keyed_param('Items.member', items or [] ))
+        data.update(utils.dict_keyed_param("DestinationAddress", dest_address or {}))
+        data.update(utils.enumerate_param("NotificationEmailList.member", notif_emails or []))
+        return self.make_request(data, method="POST")
 
     def update_fulfillment_order(self):
         """
@@ -61,7 +76,7 @@ class OutboundShipments(MWS):
         raise NotImplementedError
 
     @next_token_action('ListAllFulfillmentOrders')
-    def list_all_fulfillment_orders(self, next_token=None):
+    def list_all_fulfillment_orders(self, qry_start_datetime=None, next_token=None):
         """
         Returns a list of fulfillment orders fulfilled after (or at) a specified date.
 
@@ -70,7 +85,11 @@ class OutboundShipments(MWS):
         Docs:
         http://docs.developer.amazonservices.com/en_US/fba_outbound/FBAOutbound_ListAllFulfillmentOrders.html
         """
-        raise NotImplementedError
+        data = {
+            'Action': 'ListAllFulfillmentOrders',
+            'QueryStartDateTime': qry_start_datetime,
+        }
+        return self.make_request(data, method="POST")
 
     def list_all_fulfillment_orders_by_next_token(self, token):
         """
